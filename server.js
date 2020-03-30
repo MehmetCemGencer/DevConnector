@@ -2,15 +2,22 @@ const express = require("express");
 const connectDB = require("./config/db");
 
 const app = express();
+//Connect Databases
 connectDB();
+
+//Init Middleware
+//Look at the notes it was different back then.And the reason we use this!!!
+//urlencoded parse input areas this parse json object
+app.use(express.json({ extended: false }));
 //when on deployment it will choose avaible port on client side
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-  res.send("API Running");
+  res.sendFile("API running");
 });
 
 //Define Routes
+//DO NOT FORGET TO PUTT "/" BEFORE ANYTHING THAT NEEDS IT!!!!
 app.use("/api/users", require("./routes/api/users"));
 app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/profile", require("./routes/api/profile"));
