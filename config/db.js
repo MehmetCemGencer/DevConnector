@@ -13,7 +13,8 @@ const connectDB = async () => {
     //if didn't use "async" then have to use ".then().catch()" which will be dirty
     await mongoose.connect(db, {
       useUnifiedTopology: true,
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      useCreateIndex: true
     });
     console.log("MongoDB Connected...");
   } catch (err) {
