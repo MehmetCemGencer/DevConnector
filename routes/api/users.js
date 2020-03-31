@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 const { check, validationResult } = require("express-validator");
 //When creating router we dont use "app" instead we use router
 
@@ -82,9 +84,30 @@ router.post(
       //will get promise crypt the password and then save it
       //wait till get password hash it --hash(what to hash should be plain text password,with what)
       user.password = await bcrypt.hash(password, salt);
+
       await user.save();
+
       //Return jsonwebtoken
-      res.send("user registered");
+      const payload = {
+        user: {
+          //object have _id property.Normally we do in mongo user._id
+          //mongoose use abstraction so we dont have to use "._id"
+          id: user.id
+        }
+      };
+      //
+      jwt.sign(
+        payload,
+        config.get("jwtSecret"),
+        //in production we make it 3600(1hour) but in dev dont want to
+        //expire quickly
+        { expiresIn: 360000 },
+        (err, token) => {
+          if (err) throw err;
+          //sending user.id not necessary the way we build this
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send("server error");

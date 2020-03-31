@@ -6,7 +6,7 @@ const app = express();
 connectDB();
 
 //Init Middleware
-//Look at the notes it was different back then.And the reason we use this!!!
+//look at the notes it was different back then.And the reason we use this!!!
 //urlencoded parse input areas this parse json object
 app.use(express.json({ extended: false }));
 //when on deployment it will choose avaible port on client side
@@ -23,7 +23,6 @@ app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/profile", require("./routes/api/profile"));
 app.use("/api/posts", require("./routes/api/posts"));
 
-//Testing git commands
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
