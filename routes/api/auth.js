@@ -2,6 +2,10 @@
 const express = require("express");
 let router = express.Router();
 const auth = require("../../middleware/auth");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const bcrypt = require("bcryptjs");
+const { check, validationResult } = require("express-validator");
 
 const User = require("../../models/User");
 //@route   GET(type) api/auth(endpoint)
@@ -18,5 +22,9 @@ router.get("/", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+//@route  POST api/auth
+//@desc   Authenticate user & get token
+//@access Public
 
 module.exports = router;
