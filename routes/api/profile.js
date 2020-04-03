@@ -4,6 +4,8 @@ let router = express.Router();
 const auth = require("../../middleware/auth");
 //If we want to protect the route we just get it and add it as a second parameter
 
+const { check, validationResult } = require("express-validator");
+
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
 
@@ -33,5 +35,103 @@ router.get("/me", auth, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+//@route   POST api/profile
+//@desc    Create or update user profile
+//@access  Private
+
+//We want 2 middleware
+router.post(
+  "/",
+  [
+    auth,
+    [
+      check("status", "Status is required")
+        .not()
+        .isEmpty(),
+      check("skills", "Skills are required").notEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      //When sending "status" dont "res.send" it.Instead "res.status" it
+      res.status(400).json({ errors: errors.array() });
+    }
+    //We want to pull all the fields out.
+    //We paste this in because we are doing d-structuring but there are alotof fields
+    const {
+      //we are pulling all this from req.body
+      //We need some fields added before submitting the database
+      company,
+      location,
+      website,
+      bio,
+      skills,
+      status,
+      githubusername,
+      youtube,
+      twitter,
+      instagram,
+      linkedin,
+      facebook
+    } = req.body;
+
+    //Build profile object
+    const profileFields = {};
+    //In models/Profile there is a user field and we will get it from req.user.id
+    //We know that from token was sent
+    profileFields.user = req.user.id;
+    if (company) profileFields.company = company;
+    if (website) profileFields.website = website;
+    if (location) profileFields.location = location;
+    if (bio) profileFields.bio = bio;
+    if (status) profileFields.status = status;
+    if (githubusername) profileFields.githubusername = githubusername;
+    //ctrl+shift up or down put curser
+    if (skills) {
+      profileFields.skills = skills.split(",").map(skill => skill.trim());
+    }
+    //First we did this wrong just sent "skills" that sent in the body at the postman
+    //We need splitted and trimmed skills
+    console.log(profileFields.skills);
+
+    //Build social object
+    profileFields.social = {};
+    if (youtube) profileFields.social.youtube = youtube;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (facebook) profileFields.social.facebook = facebook;
+    if (linkedin) profileFields.social.linkedin = linkedin;
+    if (instagram) profileFields.social.instagram = instagram;
+
+    try {
+      let profile = await Profile.findOne({ user: req.user.id }); //req.user.id is jwt object _id
+
+      //If we found a profile and we want to update it
+      if (profile) {
+        //Update
+        profile = await Profile.findOneAndUpdate(
+          //find the user
+          { user: req.user.id },
+          //what to update
+          { $set: profileFields },
+          //You should set the new option to true to return the document after update was applied.
+          //mongoose findoneandupdate returns the document itself
+          //mongo driver returns result object
+          { new: true }
+        );
+
+        return res.json(profile);
+      }
+
+      //Create
+      profile = new Profile(profileFields);
+      await profile.save();
+      res.json(profile);
+    } catch (err) {
+      res.status(500).send("Server error");
+    }
+  }
+);
 
 module.exports = router;
