@@ -21,9 +21,10 @@ router.get("/me", auth, async (req, res) => {
     req.user.id comes with token and findOne
     */
     const profile = await Profile.findOne({
-      user: req.user.id
+      user: req.user.id,
     }).populate("user", ["name", "avatar"]);
-    //user is where we want to populate from,name and avatar are fields
+    //user is where we want to populate from,name and avatar are
+    //fields which does not contained by Profile model they belong to user
     //we populate because profile is not from user model
 
     if (!profile) {
@@ -41,16 +42,16 @@ router.get("/me", auth, async (req, res) => {
 //@access  Private
 
 //We want 2 middleware
+/*auth needed because if there is no user they cant have a profile
+therefore they can't access post route.Check is self exp.*/
 router.post(
   "/",
   [
     auth,
     [
-      check("status", "Status is required")
-        .not()
-        .isEmpty(),
-      check("skills", "Skills are required").notEmpty()
-    ]
+      check("status", "Status is required").not().isEmpty(),
+      check("skills", "Skills are required").notEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -74,7 +75,7 @@ router.post(
       twitter,
       instagram,
       linkedin,
-      facebook
+      facebook,
     } = req.body;
 
     //Build profile object
@@ -86,15 +87,16 @@ router.post(
     if (website) profileFields.website = website;
     if (location) profileFields.location = location;
     if (bio) profileFields.bio = bio;
-    if (status) profileFields.status = status;
+    if (status) profileFields.status = status; //Either way we check status if no they will
+    //get error,if there is this will set it
     if (githubusername) profileFields.githubusername = githubusername;
     //ctrl+shift up or down put curser
     if (skills) {
-      profileFields.skills = skills.split(",").map(skill => skill.trim());
+      profileFields.skills = skills.split(",").map((skill) => skill.trim());
     }
     //First we did this wrong just sent "skills" that sent in the body at the postman
     //We need splitted and trimmed skills
-    console.log(profileFields.skills);
+    //console.log(profileFields.skills);
 
     //Build social object
     profileFields.social = {};
@@ -149,13 +151,13 @@ router.get("/", async (req, res) => {
 });
 
 //@route   Get api/profile/user/:user_id
-//@desc    Get profile by user ID
+//@desc    Get profile by user ID not profile id
 //@access  Public
 
 router.get("/user/:user_id", async (req, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.params.user_id
+      user: req.params.user_id,
     }).populate("user", ["name", "avatar"]);
 
     //Check if there is profile
@@ -171,6 +173,27 @@ router.get("/user/:user_id", async (req, res) => {
       //server error we change that so always show
       //profile not found message
     }
+    res.status(500).send("Server error");
+  }
+});
+
+//@route   DELETE api/profile
+//@desc    DELETE profile,user&posts
+//@access  Private
+
+router.delete("/", auth, async (req, res) => {
+  try {
+    //@todo - remove users posts
+
+    //Remove profile
+    await Profile.findOneAndRemove({ user: req.user.id });
+
+    //Remove user
+    await User.findOneAndRemove({ _id: req.user.id });
+
+    res.json({ msg: "User deleted" });
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 });

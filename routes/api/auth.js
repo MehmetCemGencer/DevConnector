@@ -10,8 +10,8 @@ const { check, validationResult } = require("express-validator");
 const User = require("../../models/User");
 
 //@route   GET(type) api/auth(endpoint)
-//@desc    Test route(what this route does)
-//@access  Public(public or private)
+//@desc    Get user by token(what this route does)
+//@access  Private(public or private)
 router.get("/", auth, async (req, res) => {
   //doing async because we make a call to database
   try {
@@ -32,7 +32,7 @@ router.post(
   [
     //Because it is login we don't need name
     check("email", "Please include a valid email").isEmail(),
-    check("password", "Password is required").exists() //we want to know it exist not it length
+    check("password", "Password is required").exists(), //we want to know it exist not it length
   ],
   async (req, res) => {
     //validation result is express validator object
@@ -52,7 +52,7 @@ router.post(
     try {
       //See if user exists
       let user = await User.findOne({
-        email /*This is the same as in the email 3 lines up there*/
+        email /*This is the same as in the email 3 lines up there*/,
       });
       if (!user) {
         //To match same error type as up there on the client side
@@ -81,8 +81,8 @@ router.post(
           //Because we save it now user has an id property in the mongodb
           //object have _id property.Normally we do in mongo user._id
           //mongoose use abstraction so we dont have to use "._id"
-          id: user.id
-        }
+          id: user.id,
+        },
       };
       //creates a token
       jwt.sign(
