@@ -5,19 +5,24 @@ import Landing from "./components/layout/Landing";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import "./App.css";
+//Redux
+import { Provider } from "react-redux"; //Connects react and redux
+import store from "./store";
 
 //"function App()" change this to arrow function
 const App = () => (
-  <Router>
-    <Fragment>
-      <Navbar />
-      <Route exact path='/' component={Landing} />
-      <section className='container'>
-        <Route exact path='/login' component={Login} />
-        <Route exact path='/register' component={Register} />
-      </section>
-    </Fragment>
-  </Router>
+  <Provider store={store}>
+    <Router>
+      <Fragment>
+        <Navbar />
+        <Route exact path='/' component={Landing} />
+        <section className='container'>
+          <Route exact path='/login' component={Login} />
+          <Route exact path='/register' component={Register} />
+        </section>
+      </Fragment>
+    </Router>
+  </Provider>
 );
 
 export default App;
