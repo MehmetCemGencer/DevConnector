@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { SET_ALERT, REMOVE_ALERT } from "./types";
 
 //Want to dispatch more than 1 action type from this function
-export const setAlert = (msg, alertType) => (dispatch) => {
+export const setAlert = (msg, alertType, timeout = 5000) => (dispatch) => {
   //this is because thunk middleware (arrows)
   const id = uuidv4();
   //dispatch this will go to reducers/alert.js and resolve there
@@ -15,4 +15,6 @@ export const setAlert = (msg, alertType) => (dispatch) => {
       id,
     },
   });
+
+  setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), timeout);
 };

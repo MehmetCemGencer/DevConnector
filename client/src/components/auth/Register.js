@@ -1,7 +1,10 @@
 import React, { Fragment, useState } from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { setAlert } from "../../actions/alert";
+import PropTypes from "prop-types"; //impt is shortcut
 
-const Register = () => {
+const Register = ({ setAlert }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,7 +23,9 @@ const Register = () => {
     event.preventDefault();
     if (password !== password2) {
       //this is for now change it later
-      console.log("Passwords do not match");
+      setAlert("Passwords do not match", "danger", 3000);
+      //This will send a msg to out actions/alert and alertType
+      //danger is for css to determine alert color
     } else {
       console.log("Success");
     }
@@ -85,4 +90,16 @@ const Register = () => {
   );
 };
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired, //ptfr is shortcut
+};
+//When use connect need to export it.Every component be in "()"
+/* When import action pass it in to connect.connect takes 2 things ,
+first state that you want to map(lets say wanna get state from alert or profile 
+  put that in),
+second OBJECT(use "{}") with any actions you want to use.
+We don't need anything right now so we put null.*/
+export default connect(null, { setAlert })(Register);
+//{setAlert} allow us to access that function in props(props.setAlert)
+//instead of using as a props destructure it up top
+//pass it in Register()

@@ -4,6 +4,7 @@ import Navbar from "./components/layout/Navbar";
 import Landing from "./components/layout/Landing";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
+import Alert from "./components/layout/Alert";
 import "./App.css";
 //Redux
 import { Provider } from "react-redux"; //Connects react and redux
@@ -17,8 +18,13 @@ const App = () => (
         <Navbar />
         <Route exact path='/' component={Landing} />
         <section className='container'>
-          <Route exact path='/login' component={Login} />
-          <Route exact path='/register' component={Register} />
+          <Alert />
+          {/* switch can only have routes in it so we put alert in same 
+        section but outside switch*/}
+          <Switch>
+            <Route exact path='/register' component={Register} />
+            <Route exact path='/login' component={Login} />
+          </Switch>
         </section>
       </Fragment>
     </Router>
