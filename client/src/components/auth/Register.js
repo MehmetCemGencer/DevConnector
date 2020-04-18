@@ -1,11 +1,11 @@
 import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom"; //Remember to get Redirect incase copy paste
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
 import PropTypes from "prop-types"; //impt is shortcut
 
-const Register = ({ setAlert, register }) => {
+const Register = ({ setAlert, register, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,6 +30,10 @@ const Register = ({ setAlert, register }) => {
     } else {
       register({ name, email, password }); //destructure it in formdata
     }
+  }
+
+  if (isAuthenticated) {
+    return <Redirect to='/dashboard' />;
   }
   return (
     <Fragment>
@@ -94,14 +98,20 @@ const Register = ({ setAlert, register }) => {
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired, //ptfr is shortcut
   register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
 };
+
+//Remember to put it in connect
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
 //When use connect need to export it.Every component be in "()"
 /* When import action pass it in to connect.connect takes 2 things ,
 first state that you want to map(lets say wanna get state from alert or profile 
   put that in),
 second OBJECT(use "{}") with any actions you want to use.
 We don't need anything right now so we put null.*/
-export default connect(null, { setAlert, register })(Register);
+export default connect(mapStateToProps, { setAlert, register })(Register);
 //{setAlert} allow us to access that function in props(props.setAlert)
 //instead of using as a props destructure it up top
 //pass it in Register()

@@ -1,7 +1,12 @@
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+//to connect redux
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { login } from "../../actions/auth";
 
-const Login = () => {
+//because there are certain props we dont pass just "props" ,pass the needed ones
+const Login = ({ login, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,7 +21,12 @@ const Login = () => {
   }
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log("Success");
+    login(email, password);
+  }
+
+  //Redirect if logged in
+  if (isAuthenticated) {
+    return <Redirect to='/dashboard' />;
   }
   return (
     <Fragment>
@@ -54,4 +64,15 @@ const Login = () => {
   );
 };
 
-export default Login;
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
+};
+
+//Auth state has authentication if there is so look there(reducers/auth)
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
+//
+export default connect(mapStateToProps, { login })(Login);
