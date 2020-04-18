@@ -12,6 +12,7 @@ import store from "./store";
 
 //"function App()" change this to arrow function
 const App = () => (
+  //Wrap app with it.Now everything can access app level state
   <Provider store={store}>
     <Router>
       <Fragment>
