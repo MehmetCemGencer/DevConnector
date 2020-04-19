@@ -14,6 +14,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
           <i classname='fas fa-sign-out-alt'></i>
           {"  "}
           <span className='hide-sm'>Logout</span>
+          {/* hide-sm = In small screens text is hidden*/}
         </a>
       </li>
     </ul>
