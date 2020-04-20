@@ -1,4 +1,4 @@
-import { GET_PROFILE, PROFILE_ERROR } from "../actions/types";
+import { GET_PROFILE, PROFILE_ERROR, CLEAR_PROFILE } from "../actions/types";
 
 const initialState = {
   //get a request to back and get all profile data
@@ -25,6 +25,13 @@ export default function (state = initialState, action) {
         ...state,
         error: payload,
         loading: false, //sending msg and status in actions
+      };
+    case CLEAR_PROFILE:
+      return {
+        ...state,
+        profile: null,
+        repos: [],
+        loading: false,
       };
     default:
       return state;

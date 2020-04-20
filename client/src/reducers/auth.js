@@ -59,6 +59,7 @@ export default function (state = initialState, action) {
         isAuthenticated: false,
         //even failed loading is done
         loading: false,
+        user: null,
       };
     default:
       return state;
