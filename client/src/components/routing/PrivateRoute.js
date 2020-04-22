@@ -20,6 +20,7 @@ const PrivateRoute = ({
     }
   />
 );
+// https://tylermcginnis.com/react-router-pass-props-to-components/
 
 PrivateRoute.propTypes = {
   auth: PropTypes.object.isRequired,
