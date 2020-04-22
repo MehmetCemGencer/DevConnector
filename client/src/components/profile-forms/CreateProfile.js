@@ -1,8 +1,10 @@
 import React, { useState, Fragment } from "react";
+import { Link, withRouter } from "react-router-dom"; //withRouter is used for history.push()
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { createProfile } from "../../actions/profile";
 
-const CreateProfile = (props) => {
+const CreateProfile = ({ createProfile, history }) => {
   const [formData, setFormData] = useState({
     company: "",
     website: "",
@@ -41,6 +43,12 @@ const CreateProfile = (props) => {
     setFormData({ ...formData, [name]: value });
   }
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    //In order to use history need to destructure(else props.history)
+    createProfile(formData, history);
+  }
+
   return (
     <Fragment>
       <h1 className='large text-primary'>Create Your Profile</h1>
@@ -49,7 +57,7 @@ const CreateProfile = (props) => {
         profile stand out
       </p>
       <small>* = required field</small>
-      <form className='form'>
+      <form className='form' onSubmit={handleSubmit}>
         <div className='form-group'>
           <select name='status' value={status} onChange={handleChange}>
             <option value='0'>* Select Professional Status</option>
@@ -148,6 +156,7 @@ const CreateProfile = (props) => {
           <span>Optional</span>
         </div>
 
+        {/*If clicked then display these */}
         {displaySocialInputs && (
           <Fragment>
             <div className='form-group social-input'>
@@ -216,6 +225,11 @@ const CreateProfile = (props) => {
   );
 };
 
-CreateProfile.propTypes = {};
+CreateProfile.propTypes = {
+  createProfile: PropTypes.func.isRequired,
+};
 
-export default CreateProfile;
+// In order to use history object and use it from the action
+// need to wrap CreateProfile with "withRouter"
+
+export default connect(null, { createProfile })(withRouter(CreateProfile));
