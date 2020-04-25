@@ -45,7 +45,7 @@ const EditProfile = ({
       youtube: loading || !profile.social ? "" : profile.social.youtube,
       instagram: loading || !profile.social ? "" : profile.social.instagram,
     });
-  }, [loading]); //prop that want to depend on
+  }, [loading, getCurrentProfile]); //prop that want to depend on
 
   //To use them as variables
   const {
