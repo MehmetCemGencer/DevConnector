@@ -3,6 +3,7 @@ import {
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
+  ADD_POST,
 } from "../actions/types";
 
 const initialState = {
@@ -20,6 +21,13 @@ export default function (state = initialState, action) {
       return {
         ...state,
         posts: payload, //came from action file
+        loading: false,
+      };
+    case ADD_POST:
+      return {
+        ...state,
+        posts: [payload, ...state.posts], //If put payload after state.posts show after old post not the top
+        //All the post that is already in there and new post which is in the payload
         loading: false,
       };
     case DELETE_POST:
