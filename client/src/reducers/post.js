@@ -5,6 +5,8 @@ import {
   DELETE_POST,
   ADD_POST,
   GET_POST,
+  ADD_COMMENT,
+  REMOVE_COMMENT,
 } from "../actions/types";
 
 const initialState = {
@@ -59,6 +61,27 @@ export default function (state = initialState, action) {
             post._id === payload.id ? { ...post, likes: payload.likes } : post
           /*Payload comes in is id and likes,from both of the actions. */
         ),
+        loading: false,
+      };
+    case ADD_COMMENT:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          comments: payload, //payload is just comments,backend will return comments array,as i type in actions/post.js
+        } /*This is going to be in the single post page
+        so manipulate only post part of it */,
+        loading: false,
+      };
+    case REMOVE_COMMENT:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          comments: state.post.comments.filter(
+            (comment) => comment._id !== payload
+          ),
+        },
         loading: false,
       };
     default:

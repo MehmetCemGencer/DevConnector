@@ -7,6 +7,8 @@ import {
   DELETE_POST,
   ADD_POST,
   GET_POST,
+  ADD_COMMENT,
+  REMOVE_COMMENT,
 } from "./types";
 
 //Get Posts
@@ -34,8 +36,8 @@ export const addLike = (id) => async (dispatch) => {
     dispatch({
       type: UPDATE_LIKES,
       payload: { id, likes: res.data },
-      /* what is Returned is array of likes,
-      likes is the data that comes back */
+      /* what is Returned is array of likes from backend,
+      likes is the data that comes back.Then send it to the reducer */
     });
   } catch (err) {
     dispatch({
@@ -70,7 +72,7 @@ export const deletePost = (id) => async (dispatch) => {
 
     dispatch({
       type: DELETE_POST,
-      payload: id /*Send id,cause in the reducer know how to filter out the posts that got deleted from the UI */,
+      payload: id /*Send id to the reducer,cause in the reducer we know how to filter out the posts that got deleted from the UI */,
     });
 
     dispatch(setAlert("Post Removed", "success"));
@@ -96,7 +98,7 @@ export const addPost = (formData) => async (dispatch) => {
 
     dispatch({
       type: ADD_POST,
-      payload: res.data, // data we get back
+      payload: res.data, // data we get back from making a request
     });
 
     dispatch(setAlert("Post Created", "success"));
@@ -117,6 +119,58 @@ export const getPost = (id) => async (dispatch) => {
       type: GET_POST,
       payload: res.data,
     });
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// Add Comment
+export const addComment = (postId, formData) => async (dispatch) => {
+  //If sending data config need to be created.
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const res = await axios.post(
+      `/api/posts/comment/${postId}`,
+      formData,
+      config
+    );
+
+    dispatch({
+      type: ADD_COMMENT,
+      payload: res.data, // send the data to the reducer
+      /*When add comment it returns the comments array.That's what
+      will get back,that's what we're going to send as the payload. */
+    });
+
+    dispatch(setAlert("Comment Added", "success"));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// Delete Comment
+export const deleteComment = (postId, commentId) => async (dispatch) => {
+  try {
+    await axios.delete(`/api/posts/comment/${postId}/${commentId}`);
+
+    dispatch({
+      type: REMOVE_COMMENT,
+      payload: commentId,
+      /*Now what the remove in the state and within the UI */
+    });
+
+    dispatch(setAlert("Comment Removed", "success"));
   } catch (err) {
     dispatch({
       type: POST_ERROR,
