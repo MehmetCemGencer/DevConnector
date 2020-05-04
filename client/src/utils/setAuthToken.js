@@ -8,7 +8,7 @@ const setAuthToken = (token) => {
   } else {
     delete axios.defaults.headers.common["x-auth-token"];
   }
-  //with this function don't choose specific request , send it with every request
+  //If have token,won't choose specific function.Send the token with the every request made,because need authentication.
 };
 
 export default setAuthToken;
